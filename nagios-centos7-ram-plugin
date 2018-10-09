@@ -47,7 +47,7 @@ then
     exit 2
 
 else
-    echo "UNKNOWN"
+    echo "UNKNOWN Centos-7 RAM Settings, please adjust numbers with according to your Host"
     exit 3
 fi
 
