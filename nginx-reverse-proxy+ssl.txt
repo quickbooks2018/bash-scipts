@@ -1,0 +1,25 @@
+server {
+    listen 80;
+    server_name 34.244.11.29;
+    root /usr/share/nginx/html;
+    index index.php index.htm index.html;
+    return 301 https://34.244.11.29;
+}
+
+server {
+  listen 443 ssl;
+  ssl_certificate /etc/nginx/ssl/cloudelligent.crt;
+  ssl_certificate_key /etc/nginx/ssl/cloudelligent.key;
+
+    location / {
+        proxy_pass http://23.20.102.115:8080;
+       }
+}
+
+mkdir /etc/nginx/ssl
+chmod 700 ssl
+
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/nginx/ssl/cloudelligent.key -out /etc/nginx/ssl/cloudelligent.crt
+
+
+
