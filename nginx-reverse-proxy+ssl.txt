@@ -7,13 +7,13 @@ server {
 }
 
 server {
-  server_name jira.cloudelligent.com;
+  server_name 34.244.11.29;
   listen 443 ssl;
   ssl_certificate /etc/nginx/ssl/cloudelligent.crt;
   ssl_certificate_key /etc/nginx/ssl/cloudelligent.key;
 
     location / {
-        proxy_pass http://23.20.102.115:8080;
+        proxy_pass http://127.0.0.1:8080;
        }
 }
 
