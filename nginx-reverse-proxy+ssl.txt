@@ -1,6 +1,6 @@
 server {
     listen 80;
-    server_name 34.244.11.29;
+    server_name jira.cloudelligent.com;
     root /usr/share/nginx/html;
     index index.php index.htm index.html;
     return 301 https://34.244.11.29;
