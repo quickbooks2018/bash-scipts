@@ -7,6 +7,7 @@ server {
 }
 
 server {
+  server_name jira.cloudelligent.com;
   listen 443 ssl;
   ssl_certificate /etc/nginx/ssl/cloudelligent.crt;
   ssl_certificate_key /etc/nginx/ssl/cloudelligent.key;
