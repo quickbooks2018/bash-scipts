@@ -1,0 +1,41 @@
+#!/bin/bash
+#Aurthor: Muhammad Asim
+#Purpose: gravitee.io deployment automation
+#OS requirements Ubuntu-16/18 or Centos-7 or systemd ---> Linux distro
+
+sudo apt update -y > /dev/null
+
+sudo apt install -y curl > /dev/null
+
+sudo curl -fsSL https://get.docker.com -o get-docker.sh > /dev/null
+
+sudo sh get-docker.sh > /dev/null
+
+sudo curl -L "https://github.com/docker/compose/releases/download/1.23.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose > /dev/null
+
+sudo chmod +x /usr/local/bin/docker-compose > /dev/null
+
+sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose > /dev/null
+
+
+
+# Download compose files
+sudo curl -L https://raw.githubusercontent.com/gravitee-io/gravitee-docker/master/environments/demo/common.yml -o "common.yml" > /dev/null
+
+
+sudo curl -L https://raw.githubusercontent.com/gravitee-io/gravitee-docker/master/environments/demo/docker-compose-local.yml -o "docker-compose-local.yml" > /dev/null
+
+# (Optional step: pull to ensure that you are running latest images)
+sudo docker-compose -f docker-compose-local.yml pull > /dev/null
+
+sudo sudo sysctl -w vm.max_map_count=262144 > /dev/null
+
+
+
+IP=$(curl http://169.254.169.254/latest/meta-data/public-ipv4) > /dev/null
+
+
+
+sudo sed -i "s/localhost/$IP/g" docker-compose-local.yml > /dev/null
+
+sudo docker-compose -f docker-compose-local.yml up -d
