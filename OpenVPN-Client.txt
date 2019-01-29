@@ -2,6 +2,27 @@
 #Aurthor: Muhammad Asim
 #Purpose: Setup OpenVPN in quick time.
 
+sudo apt update -y > /dev/null
+
+sudo apt install -y curl > /dev/null
+
+sudo curl -fsSL https://get.docker.com -o get-docker.sh > /dev/null
+
+sudo sh get-docker.sh > /dev/null
+
+sudo curl -L "https://github.com/docker/compose/releases/download/1.23.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose > /dev/null
+
+sudo chmod +x /usr/local/bin/docker-compose > /dev/null
+
+sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose > /dev/null
+
+
+systemctl restart docker
+
+systemctl enable docker
+
+
+
 #We we are pulling the best Image of docker for OpenVPN on earth.
 
 echo -e "\nWe we are pulling the best Image of OpenVPN for docker on earth by kylemanna/openvpn\n"
