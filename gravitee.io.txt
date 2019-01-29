@@ -17,6 +17,9 @@ sudo chmod +x /usr/local/bin/docker-compose > /dev/null
 
 sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose > /dev/null
 
+systemctl restart docker
+
+systemctl enable docker
 
 
 # Download compose files
@@ -27,6 +30,9 @@ sudo curl -L https://raw.githubusercontent.com/gravitee-io/gravitee-docker/maste
 
 # (Optional step: pull to ensure that you are running latest images)
 sudo docker-compose -f docker-compose-local.yml pull > /dev/null
+
+
+
 
 sudo sudo sysctl -w vm.max_map_count=262144 > /dev/null
 
