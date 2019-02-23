@@ -1,3 +1,7 @@
+#Define the domain name
+
+DOMAIN='test.com'
+
 # Define where to store the generated certs and metadata.
 DIR="$(pwd)/tls"
 
@@ -38,7 +42,7 @@ subjectAltName       = @alt_names
 # DNS accordingly. 
 [alt_names]
 IP.1  = 127.0.0.1
-DNS.1 = *.xxxxxxxxxxxxxxxxxxxx.com
+DNS.1 = *."$DOMAIN"
 DNS.2 = localhost
 EOF
 
@@ -66,13 +70,13 @@ openssl req \
 
 # Generate the private key for the service. Again, you may want to increase
 # the bits to 4096.
-openssl genrsa -out "${DIR}/xxxxxxxxxxxxxxxxxxxx.com.key" 2048
+openssl genrsa -out "${DIR}/"$DOMAIN".key" 2048
 
 # Generate a CSR using the configuration and the key just generated. We will
 # give this CSR to our CA to sign.
 openssl req \
-  -new -key "${DIR}/xxxxxxxxxxxxxxxxxxxx.com.key" \
-  -out "${DIR}/xxxxxxxxxxxxxxxxxxxx.com.csr" \
+  -new -key "${DIR}/"$DOMAIN".key" \
+  -out "${DIR}/"$DOMAIN".csr" \
   -config "${DIR}/openssl.cnf"
   
 # Sign the CSR with our CA. This will generate a new certificate that is signed
@@ -80,16 +84,16 @@ openssl req \
 openssl x509 \
   -req \
   -days 3650 \
-  -in "${DIR}/xxxxxxxxxxxxxxxxxxxx.com.csr" \
+  -in "${DIR}/"$DOMAIN".csr" \
   -CA "${DIR}/CA.crt" \
   -CAkey "${DIR}/CA.key" \
   -CAcreateserial \
   -extensions v3_req \
   -extfile "${DIR}/openssl.cnf" \
-  -out "${DIR}/xxxxxxxxxxxxxxxxxxxx.com.crt"
+  -out "${DIR}/"$DOMAIN".crt"
 
 # (Optional) Verify the certificate.
-openssl x509 -in "${DIR}/xxxxxxxxxxxxxxxxxxxx.com.crt" -noout -text
+openssl x509 -in "${DIR}/"$DOMAIN".crt" -noout -text
 
 # Generate PFX For Windows 
-openssl pkcs12 -export -out xxxxxxxxxxxxxxxxxxxx.com.pfx -inkey xxxxxxxxxxxxxxxxxxxx.com.key -in xxxxxxxxxxxxxxxxxxxx.com.crt
+openssl pkcs12 -export -out "$DOMAIN".pfx -inkey "$DOMAIN".key -in "$DOMAIN".crt
