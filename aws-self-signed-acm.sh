@@ -1,6 +1,7 @@
 #Define the domain name
 
-DOMAIN='test.com'
+DOMAIN='cloudelligent.com'
+SUBDOMAIN='vpn'
 
 # Define where to store the generated certs and metadata.
 DIR="$(pwd)/tls"
@@ -42,7 +43,7 @@ subjectAltName       = @alt_names
 # DNS accordingly. 
 [alt_names]
 IP.1  = 127.0.0.1
-DNS.1 = *."$DOMAIN"
+DNS.1 = "$SUBDOMAIN"."$DOMAIN"
 DNS.2 = localhost
 EOF
 
@@ -96,4 +97,4 @@ openssl x509 \
 openssl x509 -in "${DIR}/"$DOMAIN".crt" -noout -text
 
 # Generate PFX For Windows 
-openssl pkcs12 -export -out "$DOMAIN".pfx -inkey "$DOMAIN".key -in "$DOMAIN".crt
+#openssl pkcs12 -export -out "$DOMAIN".pfx -inkey "$DOMAIN".key -in "$DOMAIN".crt
