@@ -3,12 +3,24 @@
 DOMAIN='cloudelligent.com'
 SUBDOMAIN='vpn'
 
+#Organization Details
+COUNTRY='PK'
+PROVINCE='Punjab'
+LOCATION='Lahore'
+DEPARTMENT='IT'
+COMMONNAME='Self Signed Certificate'
+
+
 # Define where to store the generated certs and metadata.
 DIR="$(pwd)/tls"
 
 # Optional: Ensure the target directory exists and is empty.
 rm -rf "${DIR}"
 mkdir -p "${DIR}"
+
+
+
+
 
 # Create the openssl configuration file. This is used for both generating
 # the certificate as well as for specifying the extensions. It aims in favor
@@ -26,11 +38,11 @@ distinguished_name = req_distinguished_name
 req_extensions = v3_req
 # Be sure to update the subject to match your organization.
 [req_distinguished_name]
-C  = CA
-ST = Ontario
-L  = The Cloud
-O  = IT
-CN = My Certificate
+C  = $COUNTRY
+ST = $PROVINCE
+L  = $LOCATION
+O  = $DEPARTMENT
+CN = $COMMONNAME
 # Allow client and server auth. You may want to only allow server auth.
 # Link to SAN names.
 [v3_req]
@@ -61,7 +73,7 @@ openssl req \
   -days 36500 \
   -nodes \
   -x509 \
-  -subj "/C=CA/ST=Ontario/L=The Cloud/O=CA" \
+  -subj "/C="$COUNTRY"/ST="$PROVINCE"/L="$LOCATION"/O="$DEPARTMENT"" \
   -keyout "${DIR}/CA.key" \
   -out "${DIR}/CA.crt"
 #
