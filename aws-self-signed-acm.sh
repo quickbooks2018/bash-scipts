@@ -38,11 +38,11 @@ distinguished_name = req_distinguished_name
 req_extensions = v3_req
 # Be sure to update the subject to match your organization.
 [req_distinguished_name]
-C  = $COUNTRY
-ST = $PROVINCE
-L  = $LOCATION
-O  = $DEPARTMENT
-CN = $COMMONNAME
+C  = "$COUNTRY"
+ST = "$PROVINCE"
+L  = "$LOCATION"
+O  = "$DEPARTMENT"
+CN = "$COMMONNAME"
 # Allow client and server auth. You may want to only allow server auth.
 # Link to SAN names.
 [v3_req]
