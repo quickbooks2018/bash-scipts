@@ -1,0 +1,69 @@
+#https://askubuntu.com/questions/919054/how-do-i-run-a-single-command-at-startup-using-systemd
+
+OS= Ubuntu-18 lts
+
+Place it in /etc/systemd/system folder with say a name of myfirst.service
+
+[Unit]
+Description=Spark service
+
+[Service]
+ExecStart=/path/to/spark/sbin/start-all.sh
+
+[Install]
+WantedBy=multi-user.target
+
+Make that your script executable with:
+
+chmod u+x /path/to/spark/sbin/start-all.sh
+Start it:
+
+sudo systemctl start myfirst
+Enable it to run at boot:
+
+sudo systemctl enable myfirst
+Stop it:
+
+###Service###
+
+#!/bin/bash
+#Aurthur="Muhammad Asim"
+#Purpose="Jira service stops, when an AMI is taken, to avoid delays restart automation of Jira is done"
+
+ACTIVE=`systemctl status jira | grep -w active | awk '{print $2}'`
+START=`systemctl start jira`
+
+echo "$ACTIVE" > /dev/null
+
+if [ "$ACTIVE" = "active" ]
+then
+        #echo $?
+        echo "Jira is running" > /dev/null
+else
+        echo "$START"
+
+
+fi
+
+
+#END
+
+######
+
+Note: Cron-Job you can set for min 5 minutes, but here I want to check the status of service every 5 seconds, so while loop is mentioned below.
+
+#!/bin/bash
+
+while true
+do
+sleep 5
+
+/root/bash/jira.sh
+
+done
+
+#END
+
+
+
+
