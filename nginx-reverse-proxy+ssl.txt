@@ -22,5 +22,15 @@ chmod 700 /etc/nginx/ssl
 
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/nginx/ssl/cloudelligent.key -out /etc/nginx/ssl/cloudelligent.crt
 
+###Configuration Location###
 
+Note: for Amazon Linux or Centos
 
+vim /etc/nginx/conf.d/server1.conf
+
+Note:for Ubuntu 
+
+vim /etc/sites-available/server1.conf
+ln -s /etc/sites-available/server1.conf /etc/nginx/sites-enabled/server1.conf
+
+###End###
