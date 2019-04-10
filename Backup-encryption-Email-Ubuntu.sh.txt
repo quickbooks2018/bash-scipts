@@ -1,0 +1,332 @@
+#!/bin/bash
+#Author:Muhamamd Asim
+#Date:10-june-2017
+#Purpose:Back up on a remote location, with compression & auto updation of backup.
+
+
+
+#Defining the source to backup
+
+
+
+#SOURCE
+LOCATION="/home/"
+SRC="source"
+
+#Creation of Source directory at /home, in which we place all our data, which we want to backup.
+if [ ! -d $LOCATION$SRC ]
+then
+ 
+ echo -e "\nCreation of $SRC directory at $LOCATION\n"
+ 
+ mkdir $LOCATION$SRC
+ 
+
+fi     
+     
+     
+SRCNAME="`date +%F`.tar"
+#DESTINATION
+DST="/home/destination"
+ 
+if [ ! -d $DST ] 
+then
+     echo -e "\nCreation of $DST directory at $LOCATION\n"
+     
+     mkdir $DST 
+     
+     
+  fi   
+     
+#Create A Backup of $SRC
+
+
+
+#Note:Very Very Important research tar actually creates an archiving of all absolute paths, which are not required.
+
+
+#The option -C works; just for clarification I'll post 1 example
+
+#creation of a tarball without the full path: full path /home/testuser/workspace/project/application.war 
+#and what we want is just project/application.war so:
+
+#tar -cvf output_filename.tar  -C /home/testuser/workspace project
+
+#Note: there is a space between workspace and project; tar will replace full path with just project
+
+SRCTAR=`tar -cvf "$SRCNAME" -C "$LOCATION" "$SRC"`
+echo $SRCTAR &> /dev/null
+
+
+if [ "$?" = "0" ]
+then
+
+    echo -e "\nMoving Source Backup to Destination\n"
+    
+    mv $SRCNAME $DST &> /dev/null
+    
+    if [ ! -f $DST/$SRCNAME ]
+    
+    then
+          echo -e "\nTar Back file does not exist\n"
+          
+       elif	[ -f $DST/$SRCNAME ]
+       then
+       
+ BZ2NAME="`date +%F`.tar.bz2"
+ 
+ #echo $BZ2NAME 
+ 
+ #Creation of BZ2 compression.
+       
+ BZ2=`tar -cjvf "$DST/$BZ2NAME" -C "$DST" "$SRCNAME"`                     
+          
+         echo  "$BZ2" &> /dev/null
+         
+         
+    fi
+    
+#Removal .tar file from destination.
+ GPGEXTENSION=".gpg"   
+      if [ -f $DST/$BZ2NAME ]
+         then
+              echo -e "\nCreating a $BZ2NAME Compression Backup and encrypting this file as $BZ2NAME$GPGEXTENSION\n"
+              
+              
+              
+              rm -rf $DST/$SRCNAME$* &> /dev/null
+              
+           
+       
+                   
+               
+               fi
+               
+  #Extracting bz2 compression.
+               
+               if [ -f $DST/$BZ2NAME ]
+               then
+               bunzip2 $DST/$BZ2NAME   &> /dev/null
+               
+  #Updating tar file              
+               if [ "$?" = "0" ]
+                
+                then
+                tar   - uvf $DST/$SRCNAME  &> /dev/null
+                
+        #Recreation of BZ2 Compression.        
+                
+          BZ2=`tar -cjvf "$DST/$BZ2NAME" -C "$DST" "$SRCNAME"`                     
+          
+                 echo  "$BZ2"  &> /dev/null
+                 
+    #Re-removal .tar file from destination.
+    
+      if [ -f $DST/$BZ2NAME ]
+         then
+              #echo -e "\nWe are removing $SRCNAME from $DST & creating a $BZ2NAME\n"
+              
+              
+              
+              rm -rf $DST/$SRCNAME$* &> /dev/null
+              
+           
+       
+                   
+               
+               fi
+                            
+                 
+                 
+                      
+                
+                fi
+               
+               fi
+               
+
+#3rd Stage will be BZ2 Image with encryption.
+ 
+ #Define encryption command first
+ #We will be using gpg -c option for encrytion, which is -c, --symmetric               encryption only with symmetric cipher
+ #symmetric means same key will be used for encryption and decrytion
+ 
+ 
+ 
+ if [ -f $DST/$BZ2NAME ]
+         then
+         
+#Creation of encryption with KEY variable, please set a KEY, further if you change a KEY, comment out the OLDKEY
+         
+GPGTHIS=`ls -lth $DST/ | head -n2 | grep -i bz2 | awk '{print $9}'`
+ KEY="ami"       
+        GPG=`gpg --yes --batch --passphrase=$KEY -c $DST/$GPGTHIS`
+        
+        echo $GPG 
+        
+        
+ #Removal of bz2 image
+        
+     if [ "$?" = "0" ] #Opening of Removal of bz2 images 
+     then
+ REMOVEBZ2=`ls -ltrh $DST/*.bz2 | head -n1 | awk '{print $9}'`  
+ 
+ rm -rf $REMOVEBZ2
+ 
+ fi                      #Closing of Removal of bz2 Images from /home/destination   
+ 
+     
+           
+#Shifting GPG encrypted file to a remote location 
+GPGREMOTE=`ls -lth $DST/*.gpg | head -n1 | awk '{print $9}'`      
+         if [ -f $GPGREMOTE ]
+         then
+         
+      
+         
+        
+        echo $GPGREMOTE  > /dev/null
+
+
+REMOTE="192.168.1.7" 
+    if [ -f $GPGREMOTE ]
+        then
+        
+        ping -c3 $REMOTE &> /dev/null
+        
+        if [ "$?" = "0" ]
+then    
+      
+      echo -e "\nWe are shifting your Data to $REMOTE please wait.....\n"
+
+rsync -auv $GPGREMOTE  ssh root@$REMOTE:/root 2> /dev/null 
+
+#Creating an E-mail function to know about the space status & health of our SERVER
+
+#GOOGLE => ALLOW LESS SECURE APP ON ===> https://myaccount.google.com/u/1/lesssecureapps?pli=1
+function PASS() {
+
+
+TO=chasim1982@gmail.com
+
+FROM=hackerhacker150@gmail.com
+
+SERVER=smtp.gmail.com:587
+
+
+SUBJECT="Congratulations Backup successfull"
+
+
+BODY="Dear Concern,\n
+
+\n
+
+This is to inform you, Backup of  $GPGREMOTE  to $REMOTE was successfull\n
+\n
+
+Regards,\n
+\n
+
+Muhammad Asim"
+
+
+
+USER=hackerhacker150@gmail.com
+
+PASS=hackerhacker150pakistan!@#$%
+
+
+sendEmail -f $FROM -t $TO -u $SUBJECT -m $BODY -s $SERVER -xu $USER -xp $PASS
+
+
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+if [ "$?" = "0" ]
+then
+
+PASS
+
+
+
+fi
+
+
+
+else
+
+
+#GOOGLE => ALLOW LESS SECURE APP ON ===> https://myaccount.google.com/u/1/lesssecureapps?pli=1
+function FAIL() {
+GPGREMOTE=`ls -lth $DST/*.gpg | head -n1 | awk '{print $9}'`
+REMOTE="192.168.1.7"
+
+TO=chasim1982@gmail.com
+
+FROM=hackerhacker150@gmail.com
+
+SERVER=smtp.gmail.com:587
+
+
+SUBJECT="Sorry Backup Un-Successfull"
+
+
+BODY="Dear Concern,\n
+
+\n
+
+This is to inform you, Backup of  $GPGREMOTE  to $REMOTE was unsuccessfull\n
+\n
+
+Regards,\n
+\n
+
+Muhammad Asim"
+
+USER=hackerhacker150@gmail.com
+
+PASS=hackerhacker150pakistan!@#$%
+
+
+sendEmail -f $FROM -t $TO -u $SUBJECT -m $BODY -s $SERVER -xu $USER -xp $PASS
+
+}
+
+               FAIL
+      echo -e "\n$REMOTE Server is down\n"
+
+
+      fi
+
+
+fi     
+    
+    fi
+    
+fi    
+    
+    else
+          echo -e "\nSomething is wrong in creating $SRC tar backup\n"
+    
+    
+    fi
+
+
+
+
+#END

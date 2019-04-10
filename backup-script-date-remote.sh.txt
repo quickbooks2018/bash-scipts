@@ -1,0 +1,185 @@
+#!/bin/bash
+#Author:Muhamamd Asim
+#Date:10-june-2017
+#Purpose:Back up on a remote location, with compression & auto updation of backup.
+
+
+
+#Defining the source to backup
+
+#SRCNAME="`date +%Y.%-m.%-d.%-H.%-M.%-S`.tar"
+
+#SOURCE
+LOCATION="/home/"
+SRC="source"
+
+#Creation of Source directory at /home, in which we place all our data, which we want to backup.
+if [ ! -d $LOCATION$SRC ]
+then
+ 
+ echo -e "\nCreation of $SRC directory at $LOCATION\n"
+ 
+ mkdir $LOCATION$SRC
+ 
+
+fi     
+     
+     
+SRCNAME="`date +%F`.tar"
+#DESTINATION
+DST="/home/destination"
+ 
+if [ ! -d $DST ] 
+then
+     echo -e "\nCreation of $DST directory at $LOCATION\n"
+     
+     mkdir $DST 
+     
+     
+  fi   
+     
+#Create A Backup of $SRC
+
+
+
+#Note:Very Very Important research tar actually creates an archiving of all absolute paths, which are not required.
+
+
+#The option -C works; just for clarification I'll post 1 example
+
+#creation of a tarball without the full path: full path /home/testuser/workspace/project/application.war 
+#and what we want is just project/application.war so:
+
+#tar -cvf output_filename.tar  -C /home/testuser/workspace project
+
+#Note: there is a space between workspace and project; tar will replace full path with just project
+
+SRCTAR=`tar -cvf "$SRCNAME" -C "$LOCATION" "$SRC"`
+echo $SRCTAR &> /dev/null
+
+
+if [ "$?" = "0" ]
+then
+
+    echo -e "\nMoving Source Backup to Destination\n"
+    
+    mv $SRCNAME $DST &> /dev/null
+    
+    if [ ! -f $DST/$SRCNAME ]
+    
+    then
+          echo -e "\nTar Back file does not exist\n"
+          
+       elif	[ -f $DST/$SRCNAME ]
+       then
+       
+ BZ2NAME="`date +%F`.tar.bz2"
+ 
+ #echo $BZ2NAME 
+ 
+ #Creation of BZ2 compression.
+       
+ BZ2=`tar -cjvf "$DST/$BZ2NAME" -C "$DST" "$SRCNAME"`                     
+          
+         echo  "$BZ2" &> /dev/null
+         
+         
+    fi
+    
+#Removal .tar file from destination.
+    
+      if [ -f $DST/$BZ2NAME ]
+         then
+              echo -e "\nCreating a $BZ2NAME Compression Backup\n"
+              
+              
+              
+              rm -rf $DST/$SRCNAME$* &> /dev/null
+              
+           
+       
+                   
+               
+               fi
+               
+  #Extracting bz2 compression.
+               
+               if [ -f $DST/$BZ2NAME ]
+               then
+               bunzip2 $DST/$BZ2NAME   &> /dev/null
+               
+  #Updating tar file              
+               if [ "$?" = "0" ]
+                
+                then
+                tar   - uvf $DST/$SRCNAME  &> /dev/null
+                
+        #Recreation of BZ2 Compression.        
+                
+          BZ2=`tar -cjvf "$DST/$BZ2NAME" -C "$DST" "$SRCNAME"`                     
+          
+                 echo  "$BZ2"  &> /dev/null
+                 
+    #Re-removal .tar file from destination.
+    
+      if [ -f $DST/$BZ2NAME ]
+         then
+              #echo -e "\nWe are removing $SRCNAME from $DST & creating a $BZ2NAME\n"
+              
+              
+              
+              rm -rf $DST/$SRCNAME$* &> /dev/null
+              
+           
+       
+                   
+               
+               fi
+                            
+                 
+                 
+                      
+                
+                fi
+               
+               fi
+               
+
+          
+    
+    
+  #Moving BZ2 Compressed File at a remote location ==> 192.168.1.7
+  #Method Creation of ssh keys with ssh-keygen for Non-Prompting of root password. 
+ REMOTE="192.168.1.7" 
+    if [ -f $DST/$BZ2NAME ]
+        then
+        
+        ping -c3 $REMOTE &> /dev/null
+        
+        if [ "$?" = "0" ]
+then    
+       SHIFTING=`ls -lth $DST/*.bz2 | head -n1 | awk '{print $9}'`
+      
+      echo -e "\nWe are shifting your Data to $REMOTE please wait.....\n"
+
+rsync -auv $SHIFTING  ssh root@$REMOTE:/root 2> /dev/null
+
+else
+      echo -e "\n$REMOTE Server is down\n"
+      
+      fi
+fi   
+    
+    
+    
+    
+    else
+          echo -e "\nSomething is wrong in creating $SRC tar backup\n"
+    
+    
+    fi
+
+
+
+
+#END

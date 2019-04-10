@@ -1,0 +1,293 @@
+#!/bin/bash
+#Date:26-May-2017
+#Aurhtor:Muhammad Asim
+#Purpose:Migration Testing of all suspended accounts on Other WEBSOULS Servers.
+
+#IFS=$'\n'
+
+
+#Creating a function for USERS NAMES & DOMAIN NAMES.
+
+function USER-DOMAIN () {
+LIST=`ls /var/cpanel/suspended/`
+
+echo -e "\nList of Suspended Accounts with "USER NAME" & "DOMAIN NAME"\n"
+
+for i in $LIST
+do
+
+
+DOMAIN=`ls /home/$i/etc/ | awk '{print $1}' | tail -n1`
+
+echo $i"        " $DOMAIN
+
+echo "###################################################################################################################"
+
+
+
+done
+}
+
+
+#End of function  USER-DOMAIN
+
+
+#Creating function List of Suspended domains ping test of all suspended domains.
+
+function SUSPENDED () {
+
+LIST=`ls /var/cpanel/suspended/`
+
+
+
+echo -e "\nList of Suspended Domains\n"
+
+echo "#####################################################################################################################"
+
+echo " "
+
+for j in $LIST
+do
+
+DOMAIN=`ls /home/$j/etc/ | awk '{print $1}' | tail -n1`
+FQDN=`echo  $DOMAIN | awk '{print $1}' | grep -iE "."`
+
+
+echo $FQDN
+
+
+
+done
+}
+
+
+
+#End of Suspended Domains Function. 
+
+
+
+#Creating a function PINGALL ping all suspended domains
+
+
+function PINGALL () {
+
+echo " "
+echo "######################################################################################################################"
+
+echo -e "\nDig Test with Google DNS, of suspended domains\n"
+
+LIST=`ls /var/cpanel/suspended/`
+
+FQDN=`echo  $DOMAIN | awk '{print $1}' | grep -iE "."`
+for T in $LIST
+do
+DOMAIN=`ls /home/$T/etc/ | awk '{print $1}' | tail -n1`
+FQDN=`echo  $DOMAIN | awk '{print $1}' | grep -iE "."`
+
+for A in $FQDN
+do
+
+
+echo "##########################################################################################################################"
+DIG=`dig $A A @8.8.8.8 | grep -iE $A | tail -n1`
+
+echo -e "$DIG"
+
+if [ "$?" = "0" ]
+then
+IP=`ping -c3 $A | grep -iE ":" | tr -d '():' | awk '{print $4}'` 2> /dev/null
+
+echo -e "\n$IP\n"
+if [ "$?" = "0" ]
+then
+
+echo -e "\nPing is working fine, website is migrated successfully\n"
+
+
+WEBS06DNS1='62.210.187.247'
+WEBS01DNS='136.243.113.211'
+WEBS02DNS='144.76.119.139'
+WEBS04DNS='88.99.66.136'
+NS700='144.76.222.41'
+WEBS10DNS='62.210.167.204'
+WINDOWS='37.187.76.99'
+
+
+
+
+
+
+if [ "$IP" = "$WEBS06DNS1" ]
+then
+      echo -e "\nWEBS06\n"
+elif [ "$IP" = "$WEBS01DNS" ]
+then
+        echo -e "\nWEBS01\n"
+elif [ "$IP" = "$WEBS02DNS" ]
+then
+        echo -e "\nWEBS02DNS\n"
+elif [ "$IP" = "$WEBS04DNS" ]
+then
+         echo -e "\nWEBS04\n"
+elif  [ "$IP" = "$NS700" ]
+then
+       echo -e "\nNS700\n"
+elif [ "$IP" = "$WEBS10DNS" ]
+then
+       echo -e "\nWEBS10\n"
+elif [ "$IP" = "$WINDOWS" ]
+then
+       echo -e "\nWindows Server\n"
+exit
+else
+     echo -e "\n$IP\n"
+     echo -e "\nThis is not WEBSOULS IP \n"
+exit
+fi
+fi
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+else
+
+echo -e "\nNo Result,xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx please check it!!!\n"
+exit
+fi
+
+done
+done
+
+}
+
+
+
+#Calling Function USER-DOMAIN
+
+#USER-DOMAIN
+
+
+
+#Calling Function SUSPENDED
+
+#SUSPENDED
+
+
+#Calling function PINGALL
+
+
+#PINGALL
+
+
+
+
+
+
+
+
+
+
+#We are setting up choices.
+PS3="PLease select from the choices: "
+
+
+FUNCTIONS="USER-DOMAIN SUSPENDED PINGALL SEARCH SEARCH-PING-TEST QUIT"
+select S in $FUNCTIONS
+do
+if [ "$S" = "USER-DOMAIN" ]
+then
+ USER-DOMAIN
+elif [ "$S" = "SUSPENDED" ]
+then
+   SUSPENDED
+elif [ "$S" = "PINGALL" ]
+then
+   PINGALL
+elif [ "$S" = "SEARCH" ]
+then
+  
+#Creating options SEARCH
+echo " "
+read -p "PLease enter the suspended domain, you want to search: " SEARCH
+
+echo -e "\nThe domain name you want to search is $SEARCH\n"
+
+AREA=`SUSPENDED | grep -iE $SEARCH`
+if [ "$?" = "0" ]
+then
+
+echo -e "\nYour domain $AREA is found in suspended Accounts\n"
+
+else
+
+echo -e "\nYour domains $AREA is not found in suspended accounts.\n"
+
+fi
+
+#END of SEARCH option.
+
+#Creating SEARCH-PING-TEST options
+
+elif [ "$S" = "SEARCH-PING-TEST" ]
+then
+
+echo " "
+read -p "PLease enter the suspended domain, you want to search & ping: " SEARCH
+
+echo -e "\nThe domain name you want to search is $SEARCH\n"
+
+AREA=`SUSPENDED | grep -iE $SEARCH`
+if [ "$?" = "0" ]
+then
+
+echo -e "\nYour domain $AREA is found in suspended Accounts\n"
+
+PING=`ping -c3 $AREA 2> /dev/null | awk '{print $4,$5}' | grep -iE ":" | tr -d '():' | grep -iE ".|." | head -n1`
+
+echo -e "\n$PING\n"
+
+DIG=`dig $AREA | grep -iE "$AREA" | tail -n1`
+
+echo -e "\n$DIG\n"
+exit
+else
+
+echo -e "\nYour domains $AREA is not found in suspended accounts.\n"
+exit
+fi
+
+
+
+
+
+
+
+#End of SEARCH-PING-TEST option.
+
+
+elif [ "$S" = "QUIT" ]
+then
+    echo QUIT
+    exit
+fi
+
+
+
+
+done
+
+#END

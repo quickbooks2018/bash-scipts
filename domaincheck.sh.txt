@@ -1,0 +1,357 @@
+bin/bash
+#Date:27-3-2017
+#Aurthor: Muhammad Asim
+#Purpose:To check client domain status
+
+#PING Test
+function PING () {
+echo -e "\nPLease enter the domain name\n"
+read NAME
+echo -e "\nYour Domain Name is $NAME \n"
+echo -e "\nInitiating PING\n"
+#ping -c3 $NAME 2> /dev/null | awk '{print $4,$5}' | grep -iE ":" | sed 's|[:(),]||g'
+
+#Domain name should be with .com, .net...
+
+
+
+
+
+ping -c3 $NAME 2> /dev/null | awk '{print $4,$5}' | grep -iE ":" | tr -d '():' | grep -iE ".|."
+if [ "$?" != "0" ]
+then
+    echo -e "\nPlease enter the correct domain name like example.com\n" 
+    echo -e "\nPING is down\n"
+    exit 1
+fi
+ping -c3 $NAME > /dev/null 2>&1
+if [ "$?" = "0" ]
+then
+       
+       echo -e "\nPing is up\n"
+else
+ 
+echo -e "\nPing is dowm\n"
+fi
+}
+
+#PING
+
+#WEBSOULS WEB SERVER TEST
+function SERVER (){
+
+echo -e "\nLooking for the WEBSOULS WEB SERVERS\n"
+echo -e  "\nPlease enter the domain name\n"
+read NAME
+
+
+echo -e "\nYour domain name is $NAME\n"
+
+
+#Looking For Name Servers.
+
+nslookup -querytype=NS $NAME | grep -i "="
+
+
+
+
+
+
+IP=`ping -c1 $NAME  2> /dev/null  | grep -iE ":" | awk '{print $5}' | sed 's|[():,]||g'`
+WEBS06DNS1='62.210.187.247'
+WEBS01DNS='136.243.113.211'
+WEBS02DNS='144.76.119.139'
+WEBS04DNS='88.99.66.136'
+NS700='144.76.222.41'
+WEBS10DNS='62.210.167.204'
+WINDOWS='37.187.76.99'
+
+
+
+
+echo -e "\n$IP\n" 
+
+
+
+
+
+
+
+if [ "$IP" = "$WEBS06DNS1" ]
+then
+      echo -e "\nWEBS06\n"
+elif [ "$IP" = "$WEBS01DNS" ]
+then
+        echo -e "\nWEBS01\n"
+elif [ "$IP" = "$WEBS02DNS" ]
+then
+        echo -e "\nWEBS02DNS\n"
+elif [ "$IP" = "$WEBS04DNS" ]
+then
+         echo -e "\nWEBS04\n"
+elif  [ "$IP" = "$NS700" ]
+then
+       echo -e "\nNS700\n"
+elif [ "$IP" = "$WEBS10DNS" ]
+then
+       echo -e "\nWEBS10\n"
+elif [ "$IP" = "$WINDOWS" ]
+then
+       echo -e "\nWindows Server\n"
+elif [ "$IP" = "" ]
+then
+       echo -e "\nNo A record IPv4 found for the $NAME domain\n"
+
+else
+     echo -e "\nThis is not WEBSOULS IP \n"
+fi
+}
+
+#SERVER
+#WHOIS info
+function WHOIS () {
+echo -e "\nFor WHOIS info, please enter the CORRECT domain name, otherwise I kick YOU from my script\n"
+
+read NAME
+
+
+DOMAIN=`echo $NAME | grep -iE ".pk" | cut -f2,3 -d "."` 
+
+echo $DOMAIN > /dev/null 
+
+
+if [ "$DOMAIN" = "pk" ]
+then
+curl https://pk6.pknic.net.pk/pk5/lookup.PK -d "id=name&name=$NAME" | bcat
+elif [ "$DOMAIN" = "com.pk" ]
+then
+curl https://pk6.pknic.net.pk/pk5/lookup.PK -d "id=name&name=$NAME" | bcat
+elif [ "$DOMAIN" = "net.pk" ]
+then
+curl https://pk6.pknic.net.pk/pk5/lookup.PK -d "id=name&name=$NAME" | bcat
+
+else
+
+whois $NAME | grep -iE "hold|email|Name Server"
+
+fi
+
+
+
+}
+
+#WHOIS
+
+#Page Error  ERROR function
+
+function ERROR () {
+
+echo -e "\nPlease enter the domain name\n"
+
+read NAME
+
+echo -e "\nYour domain name is $NAME\n"
+
+curl -IL $NAME | less 
+
+}
+
+
+#ERROR
+
+#Name Servers Addition Function
+
+function NS () {
+NS=`nslookup -querytype=NS $TEST | grep -i "=" | grep -i origin`
+
+echo -e "\n$NS\n"
+}
+#NS
+#End
+
+
+
+
+
+#Setting SERVER-FQDN Check with FQDN
+
+function SERVER-FQDN () {
+echo
+read -p "Please enter a Your domain: " DOMAIN
+
+echo -e "\nYour domain name is $DOMAIN\n"
+
+echo $DOMAIN | grep -iE "http|https"
+
+
+if [ "$?" = "0" ]
+then
+
+TEST=`echo $DOMAIN | cut -f2 -d ":" | awk -F / '{print $3}'`
+
+
+echo -e "\n$TEST\n"
+
+#Applying Function Name Servers
+
+NS 
+
+
+
+ping -c3 $TEST   > /dev/null 2>&1 
+
+if [ "$?" = "0" ]
+then
+
+
+
+
+
+
+for i in  $TEST
+do
+
+
+
+if [ "$?" = "0" ]
+then
+
+
+
+
+
+IP=`ping -c1 $i  2> /dev/null  | grep -iE ":" | awk '{print $5}' | sed 's|[():,]||g'`
+
+
+
+echo $IP 2> /dev/null
+
+if [ "$?" = "0" ]
+then
+WEBS06DNS1='62.210.187.247'
+WEBS01DNS='136.243.113.211'
+WEBS02DNS='144.76.119.139'
+WEBS04DNS='88.99.66.136'
+NS700='144.76.222.41'
+WEBS10DNS='62.210.167.204'
+WINDOWS='37.187.76.99'
+
+
+
+
+
+
+
+
+
+if [ "$IP" = "$WEBS06DNS1" ]
+then
+      echo -e "\nWEBS06\n"
+elif [ "$IP" = "$WEBS01DNS" ]
+then
+        echo -e "\nWEBS01\n"
+elif [ "$IP" = "$WEBS02DNS" ]
+then
+         echo -e "\nWEBSS02\n"
+elif [ "$IP" = "$WEBS04DNS" ]
+then
+         echo -e "\nWEBS04\n"
+elif  [ "$IP" = "$NS700" ]
+then
+       echo -e "\nNS700\n"
+elif [ "$IP" = "$WEBS10DNS" ]
+then
+       echo -e "\nWEBS10\n"
+elif [ "$IP" = "$WINDOWS" ]
+then
+       echo -e "\nWindows Server\n"
+elif [ "$IP" = "" ]
+then
+       echo -e "\nNo A record IPv4 found for the $DOMAIN domain\n"
+
+
+else
+     echo $IP
+     echo -e "\nThis is not a Websouls IP Address\n"
+fi
+
+
+
+
+
+
+
+
+
+
+
+
+fi
+
+
+fi
+
+
+
+done
+else
+echo -e "\nNo A record IPv4 found for the $DOMAIN domain\n"
+
+
+fi
+else
+echo -e "\nYour Domain Name is not started with "http" or "https"\n
+\nYou are shifted to option Number 2\n
+Please copy & paste the domain name again\n"
+SERVER
+fi
+}
+#SERVER-FQDN
+
+
+#We are setting up choices.
+PS3="PLease select from the choices: "
+LIST="WHOIS SERVER PING ERROR FULLTEST SERVER-FQDN QUIT"
+
+select i in $LIST
+do
+  if  [ "$i" = "WHOIS" ]
+   then
+    WHOIS
+   elif [ "$i" = "SERVER" ]
+    then 
+    SERVER
+   elif [ "$i" = "PING" ]
+    then
+    PING
+ elif  [ "$i" = "ERROR" ]
+   then
+
+    ERROR
+elif [ "$i" = "SERVER-FQDN" ]
+then
+
+     SERVER-FQDN
+
+   elif  [ "$i" = "FULLTEST" ]
+   then
+
+    WHOIS
+    SERVER
+    PING
+    ERROR
+    exit 
+
+    elif [ "$i" = "QUIT" ]
+    then
+        exit
+    fi 
+
+     exit
+#    break
+
+
+done
+
+
+#END

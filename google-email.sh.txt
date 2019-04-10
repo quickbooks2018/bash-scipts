@@ -1,0 +1,25 @@
+#!/bin/bash
+#GOOGLE => ALLOW LESS SECURE APP ON ===> https://myaccount.google.com/u/1/lesssecureapps?pli=1
+#apt install sendemail
+
+TO=chasim1982@gmail.com
+
+FROM=hackerhacker150@gmail.com
+
+SERVER=smtp.gmail.com:587
+
+
+SUBJECT="Test E-mail"
+
+
+BODY="This is the body of text"
+
+
+
+USER=hackerhacker150@gmail.com
+
+PASS=ENTERYOURPASSWORD
+
+
+sendEmail -f $FROM -t $TO -u $SUBJECT -m $BODY -s $SERVER -xu $USER -xp $PASS
+
