@@ -64,6 +64,41 @@ done
 
 #END
 
+For Centos 7
+https://www.writebash.com/advanced-tutorial/make-bash-script-run-as-a-service-in-centos-7-259.html
 
 
+[Unit]
+Description=Getload service - WriteBash demo service in CentOS 7.x
+After=network.target
+
+[Service]
+Type=simple
+PIDFile=/var/run/getload.pid
+ExecStart=/bin/sh -c "/opt/getload.sh >>/var/log/getload.log 2>&1"
+TimeoutStartSec=0
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
+
+
+########################
+
+jira example
+
+[Unit]
+Description=Jira Service By Muhammad Asim
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+PIDFile=/var/run/getload.pid
+ExecStart=/bin/sh -c "/root/bash/while.sh"
+TimeoutStartSec=0
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
 
