@@ -7,7 +7,7 @@ ssh-add -k <PEM_file_name>
 
 ssh-add -L
 
-sh -A ec2-user@<bastion-host-elastic-ip>
+ssh -A ec2-user@<bastion-host-elastic-ip>
 
 
 #https://stackoverflow.com/questions/24154816/git-bash-could-not-open-a-connection-to-your-authentication-agent/33697306
