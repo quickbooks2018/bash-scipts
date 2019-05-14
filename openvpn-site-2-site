@@ -1,0 +1,94 @@
+SERVER-A
+
+
+Cd  /etc/openvpn/
+openvpn --genkey --secret mykey.key
+
+# Note: copy this mykey.key to SERVER-B - /etc/openvpn
+
+Vim vpc1-to-vpc2.conf
+
+#COPY BELOW SECTION
+###START###
+# Sample OpenVPN configuration file using a pre-shared static key
+
+# Port to use: 1194 is the official IANA port number
+port 1194
+
+# Use a dynamic tun device.
+dev tun
+
+# Remote peer and network
+remote SERVER-B-PUBLIC-IP
+route 10.11.0.0 255.255.0.0
+
+# Configure local and remote VPN endpoints
+ifconfig 169.254.255.1 169.254.255.2
+
+###END###
+
+# The pre-shared static key
+secret mykey.key
+
+ systemctl daemon-reload
+ systemctl restart openvpn
+ 
+iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+iptables -t nat -A POSTROUTING -o tun0 -j MASQUERADE
+
+iptables -A INPUT -i eth0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+iptables -A INPUT -i tun0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+
+iptables -A FORWARD -j ACCEPT 
+https://unix.stackexchange.com/questions/283801/iptables-forward-traffic-to-vpn-tunnel-if-open
+
+
+
+
+
+
+
+
+
+
+
+
+SERVER-B
+
+
+
+# cd  /etc/openvpn/
+# vim vpc2-to-vpc1.conf
+###START###
+# Sample OpenVPN configuration file using a pre-shared static key
+# Port to use: 1194 is the official IANA port number
+port 1194
+
+# Use a dynamic tun device.
+dev tun
+
+# Remote peer and network
+remote SERVER-A-PUBLIC-IP
+route 172.31.0.0 255.255.0.0
+
+# Configure local and remote VPN endpoints
+ifconfig 169.254.255.2 169.254.255.1
+
+###END###
+
+# The pre-shared static key
+secret mykey.key
+
+ systemctl daemon-reload
+ systemctl restart openvpn
+
+
+
+iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+iptables -t nat -A POSTROUTING -o tun0 -j MASQUERADE
+
+iptables -A INPUT -i eth0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+iptables -A INPUT -i tun0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+
+iptables -A FORWARD -j ACCEPT 
+https://unix.stackexchange.com/questions/283801/iptables-forward-traffic-to-vpn-tunnel-if-open
