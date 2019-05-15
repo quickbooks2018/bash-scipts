@@ -50,6 +50,8 @@ echo 1 > /proc/sys/net/ipv4/ip_forward
 To make the change permanent insert or edit the following line in edit /etc/sysctl.conf:
 net.ipv4.ip_forward = 1
 
+sysctl -p
+
 
 
 
@@ -108,3 +110,5 @@ Than
 echo 1 > /proc/sys/net/ipv4/ip_forward
 To make the change permanent insert or edit the following line in edit /etc/sysctl.conf:
 net.ipv4.ip_forward = 1
+
+sysctl -p
