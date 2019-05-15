@@ -30,7 +30,12 @@ vim /etc/nginx/conf.d/server1.conf
 
 Note:for Ubuntu 
 
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/cloudelligent.key -out /etc/nginx/ssl/cloudelligent.crt
+
+
 vim /etc/sites-available/server1.conf
 ln -s /etc/sites-available/server1.conf /etc/nginx/sites-enabled/server1.conf
+
+https://www.digitalocean.com/community/tutorials/how-to-create-a-self-signed-ssl-certificate-for-nginx-in-ubuntu-16-04
 
 ###End###
