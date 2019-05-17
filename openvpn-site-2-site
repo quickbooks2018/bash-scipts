@@ -1,7 +1,7 @@
 SERVER-A
 
 
-Cd  /etc/openvpn/
+cd  /etc/openvpn/
 openvpn --genkey --secret mykey.key
 
 # Note: copy this mykey.key to SERVER-B - /etc/openvpn
@@ -19,16 +19,17 @@ port 1194
 dev tun
 
 # Remote peer and network
-remote SERVER-B-PUBLIC-IP
-route 10.11.0.0 255.255.0.0
+#remote SERVER-B-PUBLIC-IP #Note: Not necessary IF this SERVER A is SERVER & SERVER B is Client
+route 192.168.1.0 255.255.255.0
 
 # Configure local and remote VPN endpoints
-ifconfig 169.254.255.1 169.254.255.2
+ifconfig 10.1.1.1 10.1.1.2
 
-###END###
 
 # The pre-shared static key
 secret mykey.key
+
+###END###
 
  systemctl daemon-reload
  systemctl restart openvpn
@@ -79,16 +80,17 @@ port 1194
 dev tun
 
 # Remote peer and network
-remote SERVER-A-PUBLIC-IP
+remote SERVER-A-PUBLIC-IP   #Note: This is must
 route 172.31.0.0 255.255.0.0
 
 # Configure local and remote VPN endpoints
-ifconfig 169.254.255.2 169.254.255.1
+ifconfig 10.1.1.2 10.1.1.1
 
-###END###
 
 # The pre-shared static key
 secret mykey.key
+
+###END###
 
  systemctl daemon-reload
  systemctl restart openvpn
@@ -124,3 +126,8 @@ sysctl -p
 
  systemctl daemon-reload
  systemctl restart openvpn
+
+##############################################################################################
+#LOGS
+
+grep VPN /var/log/syslog
