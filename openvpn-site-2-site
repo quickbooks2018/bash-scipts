@@ -4,7 +4,7 @@ SERVER-A
 cd  /etc/openvpn/
 openvpn --genkey --secret mykey.key
 
-# Note: copy this mykey.key to SERVER-B - /etc/openvpn
+# Note: copy this mykey.key to SERVER-B -? /etc/openvpn
 
 Vim vpc1-to-vpc2.conf
 
@@ -19,7 +19,12 @@ port 1194
 dev tun
 
 # Remote peer and network
-#remote SERVER-B-PUBLIC-IP #Note: Not necessary IF this SERVER A is SERVER & SERVER B is Client
+#remote SERVER-B-PUBLIC-IP #Note: Not necessary IF this SERVER A is a SERVER & SERVER B is Client
+#remote mydns.com #Give Dynamic DNS 
+#DYNAMIC IP 
+#www.dynu.com
+
+
 route 192.168.1.0 255.255.255.0
 
 # Configure local and remote VPN endpoints
@@ -33,15 +38,35 @@ secret mykey.key
 
  systemctl daemon-reload
  systemctl restart openvpn
- 
+
+
+#################IP Tables Server Side######################
+iptables --flush
+iptables --delete-chain
+iptables -t nat -F 
 iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 iptables -t nat -A POSTROUTING -o tun0 -j MASQUERADE
 
 iptables -A INPUT -i eth0 -m state --state RELATED,ESTABLISHED -j ACCEPT
 iptables -A INPUT -i tun0 -m state --state RELATED,ESTABLISHED -j ACCEPT
 
- iptables -A FORWARD -j ACCEPT 
- iptables -t nat -A POSTROUTING -j MASQUERADE
+iptables -A FORWARD -j ACCEPT 
+iptables -t nat -A POSTROUTING -j MASQUERADE
+
+###### to save new rules
+
+apt install netfilter-persistent
+
+
+netfilter-persistent save
+
+##### apply  to startup
+
+systemctl enable netfilter-persistent
+
+#################IP Tables Server Side######################
+
+
 https://unix.stackexchange.com/questions/283801/iptables-forward-traffic-to-vpn-tunnel-if-open
 
 #IP Forwarding
@@ -65,7 +90,7 @@ sysctl -p
 
 
 
-SERVER-B
+SERVER-B Client-Side
 
 
 
@@ -80,7 +105,7 @@ port 1194
 dev tun
 
 # Remote peer and network
-remote SERVER-A-PUBLIC-IP   #Note: This is must
+#remote SERVER-A-PUBLIC-IP   #Note: This is must
 route 172.31.0.0 255.255.0.0
 
 # Configure local and remote VPN endpoints
@@ -97,15 +122,37 @@ secret mykey.key
 
 
 
-iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
-iptables -t nat -A POSTROUTING -o tun0 -j MASQUERADE
+ ######### Client Side  iptables paste all this in ############### ---> Note ---> always check the interface
 
-iptables -A INPUT -i eth0 -m state --state RELATED,ESTABLISHED -j ACCEPT
-iptables -A INPUT -i tun0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+sudo iptables --flush
+sudo iptables --delete-chain
+sudo iptables -t nat -F
+sudo iptables -t nat -A POSTROUTING -o tun+ -j MASQUERADE
+sudo iptables -A INPUT -i ens33 -p tcp --dport 22 -j ACCEPT
+sudo iptables -A INPUT -i lo -m comment --comment "loopback" -j ACCEPT
+sudo iptables -A OUTPUT -o lo -m comment --comment "loopback" -j ACCEPT
+sudo iptables -I INPUT -i ens33 -m comment --comment "In from LAN" -j ACCEPT
+sudo iptables -I OUTPUT -o tun+ -m comment --comment "Out to VPN" -j ACCEPT
+sudo iptables -A OUTPUT -o ens33 -p udp --dport 1194 -m comment --comment "openvpn" -j ACCEPT
+sudo iptables -A OUTPUT -o ens33 -p udp --dport 123 -m comment --comment "ntp" -j ACCEPT
+sudo iptables -A OUTPUT -p UDP --dport 67:68 -m comment --comment "dhcp" -j ACCEPT
+sudo iptables -A OUTPUT -o ens33 -p udp --dport 53 -m comment --comment "dns" -j ACCEPT
+sudo iptables -A FORWARD -i tun+ -o ens33 -m state --state RELATED,ESTABLISHED -j ACCEPT
+sudo iptables -A FORWARD -i ens33 -o tun+ -m comment --comment "LAN out to VPN" -j ACCEPT
+sudo iptables  -P FORWARD DROP
 
- iptables -A FORWARD -j ACCEPT 
+######### Client Side  iptables paste all this in ###############
 
- iptables -t nat -A POSTROUTING -j MASQUERADE
+18 ###### to save new rules
+
+apt install netfilter-persistent
+
+
+sudo netfilter-persistent save
+
+19 ##### apply  to startup
+
+sudo systemctl enable netfilter-persistent
  
 https://unix.stackexchange.com/questions/283801/iptables-forward-traffic-to-vpn-tunnel-if-open
 
