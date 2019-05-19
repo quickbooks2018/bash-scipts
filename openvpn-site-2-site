@@ -124,22 +124,22 @@ secret mykey.key
 
  ######### Client Side  iptables paste all this in ############### ---> Note ---> always check the interface
 
-sudo iptables --flush
-sudo iptables --delete-chain
-sudo iptables -t nat -F
-sudo iptables -t nat -A POSTROUTING -o tun+ -j MASQUERADE
-sudo iptables -A INPUT -i ens33 -p tcp --dport 22 -j ACCEPT
-sudo iptables -A INPUT -i lo -m comment --comment "loopback" -j ACCEPT
-sudo iptables -A OUTPUT -o lo -m comment --comment "loopback" -j ACCEPT
-sudo iptables -I INPUT -i ens33 -m comment --comment "In from LAN" -j ACCEPT
-sudo iptables -I OUTPUT -o tun+ -m comment --comment "Out to VPN" -j ACCEPT
-sudo iptables -A OUTPUT -o ens33 -p udp --dport 1194 -m comment --comment "openvpn" -j ACCEPT
-sudo iptables -A OUTPUT -o ens33 -p udp --dport 123 -m comment --comment "ntp" -j ACCEPT
-sudo iptables -A OUTPUT -p UDP --dport 67:68 -m comment --comment "dhcp" -j ACCEPT
-sudo iptables -A OUTPUT -o ens33 -p udp --dport 53 -m comment --comment "dns" -j ACCEPT
-sudo iptables -A FORWARD -i tun+ -o ens33 -m state --state RELATED,ESTABLISHED -j ACCEPT
-sudo iptables -A FORWARD -i ens33 -o tun+ -m comment --comment "LAN out to VPN" -j ACCEPT
-sudo iptables  -P FORWARD DROP
+iptables --flush
+iptables --delete-chain
+iptables -t nat -F
+iptables -t nat -A POSTROUTING -o tun+ -j MASQUERADE
+iptables -A INPUT -i ens33 -p tcp --dport 22 -j ACCEPT
+iptables -A INPUT -i lo -m comment --comment "loopback" -j ACCEPT
+iptables -A OUTPUT -o lo -m comment --comment "loopback" -j ACCEPT
+iptables -I INPUT -i ens33 -m comment --comment "In from LAN" -j ACCEPT
+iptables -I OUTPUT -o tun+ -m comment --comment "Out to VPN" -j ACCEPT
+iptables -A OUTPUT -o ens33 -p udp --dport 1194 -m comment --comment "openvpn" -j ACCEPT
+iptables -A OUTPUT -o ens33 -p udp --dport 123 -m comment --comment "ntp" -j ACCEPT
+iptables -A OUTPUT -p UDP --dport 67:68 -m comment --comment "dhcp" -j ACCEPT
+iptables -A OUTPUT -o ens33 -p udp --dport 53 -m comment --comment "dns" -j ACCEPT
+iptables -A FORWARD -i tun+ -o ens33 -m state --state RELATED,ESTABLISHED -j ACCEPT
+iptables -A FORWARD -i ens33 -o tun+ -m comment --comment "LAN out to VPN" -j ACCEPT
+iptables  -P FORWARD DROP
 
 ######### Client Side  iptables paste all this in ###############
 
