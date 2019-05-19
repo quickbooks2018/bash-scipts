@@ -48,7 +48,7 @@ docker run -v $OVPN_DATA:/etc/openvpn --rm -it kylemanna/openvpn ovpn_initpki
 sleep 1
 echo -e "\nStep 4, We are Starting OpenVPN server process please wait ...\n"
 
-docker run --name OpenVPN -v $OVPN_DATA:/etc/openvpn -d -p 1194:1194/udp --cap-add=NET_ADMIN kylemanna/openvpn
+docker run --name OpenVPN -v $OVPN_DATA:/etc/openvpn --restart unless-stopped -d -p 1194:1194/udp --cap-add=NET_ADMIN kylemanna/openvpn
 
 sleep 3
 
