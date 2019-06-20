@@ -1,0 +1,43 @@
+#!/bin/bash
+
+#Run the following commands to get the Docker gpg key and add it to your repository:
+
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+
+#Run the following commands to get the Kubernetes gpg key and add it to your repository:
+
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+
+cat << EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
+deb https://apt.kubernetes.io/ kubernetes-xenial main
+EOF
+
+sudo apt-get update
+
+#Run the following command to install Docker, kubelet, kubeadm, and kubectl:
+sudo apt-get install -y docker-ce=18.06.1~ce~3-0~ubuntu kubelet=1.13.5-00 kubeadm=1.13.5-00 kubectl=1.13.5-00 --allow-change-held-packages
+
+#Run the following command to initialize the cluster using kubeadm:
+sudo kubeadm init --pod-network-cidr=10.244.0.0/16
+
+#Run the following command to set up local kubeconfig:
+mkdir -p $HOME/.kube
+
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+#flannel CNI plugin as a network overlay.keyboard_arrow_up
+#Run the following command to apply flannel:
+kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/bc79dd1505b0c8681ece4de4c0d86c5cd2643275/Documentation/kube-flannel.yml
+
+#Join the worker nodes to the cluster, and verify they have joined successfully.keyboard_arrow_up
+#Run the following command to join the worker nodes to the cluster:
+#sudo kubeadm create token --print-join-command <your unique string from the output of kubeadm init>
+
+sudo kubeadm create token --print-join-command
+
+
+#
