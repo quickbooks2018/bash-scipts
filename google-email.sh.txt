@@ -125,6 +125,16 @@ _______________________________R&D______________________________________________
 sudo apt install s-nail
 
 
+##################################### mutt ###################################################
+
+yum -y install cyrus-sasl-plain    ----> must install with mutt
+
+set folder="imap://smtp-user@mail-server.yourdomain.com"
+set spoolfile="imap://smtp-user@mail-server.yourdomain.com/INBOX"
+set smtp_url = "smtps://smtp-user@mail-server.yourdomain.com:465/"
+set from = "smtp-user@yourdomain.com"
+set realname = "Muhammad Asim Arain"
+
 
 # https://www.ndchost.com/wiki/mail/test-smtp-auth-telnet
 
