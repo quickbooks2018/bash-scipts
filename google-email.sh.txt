@@ -23,3 +23,114 @@ PASS=ENTERYOURPASSWORD
 
 sendEmail -f $FROM -t $TO -u $SUBJECT -m $BODY -s $SERVER -xu $USER -xp $PASS
 
+
+################################################################################################################################
+
+# Postfix
+
+1. ss -ntl
+
+2. postalias /etc/aliases
+
+3. postconf -n
+
+4. postconf -p message_size_limit
+
+5. postconf -e 'mailbox_size_limit=20480000'
+
+  # Local Mail delivery & Verify Activity in Mail Logs
+
+6. apt install s-nail   ---> is mailx
+
+7. mailx -s test smtp-user
+   testing
+   .
+
+   mailx
+   1
+   q
+
+
+8. tail /var/log/mail.log    ---> see status ---> sent or bounced 
+
+9. useradd smtp-user
+
+_____________________________________________________________________
+
+1. ls /var/spool/postfix
+
+2. postqueue -p
+
+3. s-nail -s "Testing by Asim" "quickbooks2018@gmail.com"
+   the body
+   .
+  
+   postqueue -p
+   
+
+4. grep hosts /etc/nsswitch.conf  ---> for local
+
+---------------------------------------------------------------------------
+
+# tls 
+
+openssl s_client -connect mail-server.bridgeway-eng.com:25 -starttls smtp
+
+ss -ntl
+
+openssl s_client -connect mail-server.bridgeway-eng.com:465
+
+
+_______________________________R&D_______________________________________________
+
+# dovecot
+
+# apt install -y mail-stack-delivery
+
+ postconf -p home_mailbox
+
+ postconf -p mailbox_command
+
+ cd /etc/dovecot
+
+ cd /etc/dovecot/conf.d
+
+ cp 10-mail.conf 10-mail.conf-backup
+
+ vim 10-mail.conf
+
+ /privileged
+
+ systemctl restart dovecot
+
+ systemctl status dovecot
+
+ ss -ntl
+
+
+# Making home directory for an existing user
+
+  mkhomedir_helper smtp-user
+
+ s-nail -s test smtp-user 
+ body
+ .
+
+ usermod -aG sudo smtp-user 
+
+ sudo tail /var/log/mail.log
+
+
+
+sudo apt install s-nail
+
+
+
+# https://www.ndchost.com/wiki/mail/test-smtp-auth-telnet
+
+# https://bobcares.com/blog/postfix-authentication-not-enabled/
+
+# https://www.garron.me/en/go2linux/send-mail-gmail-mutt.html
+
+# https://github.com/LukeSmithxyz/mutt-wizard/issues/28   ---> package for mutt
+
