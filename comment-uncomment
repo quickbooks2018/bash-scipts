@@ -1,0 +1,46 @@
+#!/bin/bash
+
+LOGSTASH_IP='192.168.1.20'
+REPLACE_LOGSTASH_IP=$(sed -ire '163 s/localhost/'$LOGSTASH_IP'/' /etc/filebeat/filebeat.yml)
+UNCOMMENT_OUTPUT_LOGSTASH_LINE_161=`head -n 162 /etc/filebeat/filebeat.yml | tail -n 5 | grep output.logstash | sed -ire 's/^#//' /etc/filebeat/filebeat.yml`
+UNCOMMNET_LINE_163=`head -n 163 /etc/filebeat/filebeat.yml | tail -n 1 | sed -ire 's/#hosts/hosts/' /etc/filebeat/filebeat.yml`
+
+
+
+
+yum update -y && yum upgrade -y
+
+cat <<EOF > /etc/yum.repos.d/elastic.repo
+##
+##
+[elasticsearch]
+name=Elasticsearch repository for 6.x packages
+baseurl=https://artifacts.elastic.co/packages/6.x/yum
+gpgcheck=1
+gpgkey=https://artifacts.elastic.co/GPG-KEY-elasticsearch
+enabled=0
+autorefresh=1
+type=rpm-md
+EOF
+
+yum --enablerepo=elasticsearch  install filebeat -y
+
+systemctl enable filebeat
+
+cp /etc/filebeat/filebeat.yml /etc/filebeat/filebeat.yml-backup
+
+echo $UNCOMMENT_OUTPUT_LOGSTASH_LINE_161
+
+echo $UNCOMMNET_LINE_163
+
+echo $REPLACE_LOGSTASH_IP
+
+systemctl start filebeat.service
+
+systemctl status filebeat.service
+
+systemctl enable filebeat.service
+
+
+
+# END
