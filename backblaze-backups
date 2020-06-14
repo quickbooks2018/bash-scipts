@@ -68,6 +68,10 @@ https://git-scm.com/downloads
 "C:\Program Files\Git\git-bash.exe"
 --cd-to-home /c/Users/Administrator/Desktop/backup.sh
 
+# Backblaze CLI Installation
+https://www.backblaze.com/b2/docs/quick_command_line.html
+
+---> pip install --upgrade b2
 
 # Best open source tool is Cyberduck 
 https://cyberduck.io/
