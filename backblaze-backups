@@ -1,0 +1,47 @@
+#!/bin/bash
+# Aurthor: Muhammad Asim
+# Purpose: Backblaze Automated Backups for OS Windows/Linux
+# Contact: <quickbooks2018@gmail.com> https://www.youtube.com/c/AWSLinuxWindows
+
+
+# Put the Directory/File Name in the variable FILENAME
+FILENAME="power"
+BACKUP="$FILENAME"
+DATE=`date +'%d-%m-%Y'`
+
+# Blackblaze Setup
+B2_ACC_ID="PUT Your Account ID"
+B2_APP_KEY="Put Your KeY"
+B2_BUCKET_NAME="Buckey Name"
+
+# Compression Setup, creating a tar
+tar -czvf "$BACKUP"."$DATE".tar.gz "$BACKUP"
+
+# Local Retention Setup
+IGNORE_1=`ls -lthr | tail -n2 | awk '{print $NF}' | head -n1`
+IGNORE_2=`ls -lthr | tail -n2 | awk '{print $NF}' | tail -n1`
+
+if [ -d "$PWD/Backblaze" ]
+then
+echo -e "\nDirectory "$PWD/Backblaze" already exists\n"
+else
+echo -e "\n Creating a Directory "$PWD/Backblaze" \n"
+mkdir $PWD/Backblaze
+fi
+
+
+mv "$BACKUP"."$DATE".tar.gz  $PWD/Backblaze
+cd $PWD/Backblaze
+ls --ignore="$IGNORE_1" --ignore="$IGNORE_2" | xargs rm -rf
+
+# Upload to Blackblaze
+echo "starting upload "$BACKUP"."$DATE".tar.gz to b2 at $(date +'%d-%m-%Y %H:%M:%S')"
+b2 authorize-account $B2_ACC_ID $B2_APP_KEY
+b2 upload_file $B2_BUCKET_NAME "$BACKUP"."$DATE".tar.gz "$BACKUP"."$DATE".tar.gz
+echo "finished uploading "$BACKUP"."$DATE".tar.gz to b2 at $(date +'%d-%m-%Y %H:%M:%S')"
+exit 0
+
+#END
+
+# ref:https://medium.com/@aslamhadi/daily-backup-database-to-backblaze-cloud-storage-f6659d0e2f53
+# ref: https://www.youtube.com/watch?v=GOkAy2RqRQk
