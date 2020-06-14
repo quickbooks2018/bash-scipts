@@ -45,3 +45,31 @@ exit 0
 
 # ref:https://medium.com/@aslamhadi/daily-backup-database-to-backblaze-cloud-storage-f6659d0e2f53
 # ref: https://www.youtube.com/watch?v=GOkAy2RqRQk
+
+
+# Installations
+https://chocolatey.org/docs/installation
+Powershell command ---> run as administrator
+
+Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+
+
+choco install python  ---> (5 Times Yes)
+
+
+https://www.backblaze.com/b2/docs/quick_command_line.html
+pip install --upgrade --ignore-installed b2
+
+
+# Git Bash Setup
+https://git-scm.com/downloads
+
+# Git Bash Task Schedular Setup
+"C:\Program Files\Git\git-bash.exe"
+--cd-to-home /c/Users/Administrator/Desktop/backup.sh
+
+
+# Best open source tool is Cyberduck 
+https://cyberduck.io/
+
+
