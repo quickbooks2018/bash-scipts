@@ -78,3 +78,59 @@ https://www.backblaze.com/b2/docs/quick_command_line.html
 https://cyberduck.io/
 
 
+##############################################################
+#!/bin/bash
+# Aurthor: Muhammad Asim
+# Purpose: Backblaze Automated Backups for OS Windows/Linux
+# Contact: <quickbooks2018@gmail.com> https://www.youtube.com/c/AWSLinuxWindows
+
+# Adding Directories to the backups, tip create a new directory manually 
+cd /c/Users/Administrator/MANUAL
+mkdir  backup
+cp -rv /c/TARGET /c/Users/Administrator/MANUAL/backup
+
+
+# Put the Directory/File Name in the variable FILENAME
+FILENAME="backup"
+BACKUP="$FILENAME"
+DATE=`date +'%d-%m-%Y'`
+
+# Blackblaze Setup
+B2_ACC_ID="YOURID"
+B2_APP_KEY="YOURKEY"
+B2_BUCKET_NAME="cloudgeeks-prod"
+
+# Compression Setup, creating a tar
+tar -czvf "$BACKUP"."$DATE".tar.gz "$BACKUP"
+
+# Local Retention Setup
+IGNORE_1=`ls -lthr | tail -n2 | awk '{print $NF}' | head -n1`
+IGNORE_2=`ls -lthr | tail -n2 | awk '{print $NF}' | tail -n1`
+
+if [ -d "$PWD/Backblaze" ]
+then
+echo -e "\nDirectory "$PWD/Backblaze" already exists\n"
+else
+echo -e "\n Creating a Directory "$PWD/Backblaze" \n"
+mkdir $PWD/Backblaze
+fi
+
+
+mv "$BACKUP"."$DATE".tar.gz  $PWD/Backblaze
+cd $PWD/Backblaze
+ls --ignore="$IGNORE_1" --ignore="$IGNORE_2" | xargs rm -rf
+
+# Upload to Blackblaze
+echo "starting upload "$BACKUP"."$DATE".tar.gz to b2 at $(date +'%d-%m-%Y %H:%M:%S')"
+b2 authorize-account $B2_ACC_ID $B2_APP_KEY
+b2 upload_file $B2_BUCKET_NAME "$BACKUP"."$DATE".tar.gz "$BACKUP"."$DATE".tar.gz
+echo "finished uploading "$BACKUP"."$DATE".tar.gz to b2 at $(date +'%d-%m-%Y %H:%M:%S')"
+echo "Now removing the directory backup"
+cd ..
+rm -rf backup
+exit 0
+
+#END
+
+
+
