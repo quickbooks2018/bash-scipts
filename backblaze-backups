@@ -84,7 +84,7 @@ https://cyberduck.io/
 # Purpose: Backblaze Automated Backups for OS Windows/Linux
 # Contact: <quickbooks2018@gmail.com> https://www.youtube.com/c/AWSLinuxWindows
 
-# Adding Directories to the backups, tip create a new directory manually 
+# Adding Directories to the backups, tip create a new directory manually & put the script inside the MANUAL directory created by yourself.
 cd /c/Users/Administrator/MANUAL
 mkdir  backup
 cp -rv /c/TARGET /c/Users/Administrator/MANUAL/backup
