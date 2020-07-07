@@ -1,4 +1,5 @@
 # https://www.ssh.com/ssh/tunneling/example
+# https://docs.bitnami.com/virtual-machine/faq/get-started/access-ssh-tunnel/
 
 ssh -i -N -L 8888:127.0.0.1:80 ubuntu@IP
 
