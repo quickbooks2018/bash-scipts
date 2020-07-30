@@ -1,0 +1,21 @@
+#!/bin/bash
+i=`ls *.log | cut -f2  -d "-" | cut -c1`
+name1="access"
+delimiter1="-"
+for file in *.log;
+do
+        let i++;
+
+
+
+#       echo $i
+#       echo $file
+
+#       echo $name1
+#       echo $delimiter1
+
+
+       echo "$name1""$delimiter1""$i".log
+
+       mv $file "$name1""$delimiter1""$i".log
+done
