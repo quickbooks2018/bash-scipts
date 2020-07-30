@@ -1,5 +1,5 @@
 #!/bin/bash
-i=`ls *.log | cut -f2  -d "-" | cut -c1`
+i=`ls *.log | cut -f2  -d "-" | awk -F ".log" '{print $1}'`
 name1="access"
 delimiter1="-"
 for file in *.log;
