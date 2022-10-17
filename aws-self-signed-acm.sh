@@ -114,3 +114,5 @@ openssl x509 -in "${DIR}/"$DOMAIN".crt" -noout -text
 #openssl pkcs12 -export -out "$DOMAIN".pfx -inkey "$DOMAIN".key -in "$DOMAIN".crt
 
 #https://aws.amazon.com/blogs/security/how-to-prepare-for-aws-move-to-its-own-certificate-authority/
+
+# End
