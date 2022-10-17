@@ -3,7 +3,7 @@
 #Define the domain name
 
 DOMAIN='cloudgeeks.tk'
-SUBDOMAIN='vpn'
+SUBDOMAIN='*'
 
 #Organization Details
 COUNTRY='PK'
