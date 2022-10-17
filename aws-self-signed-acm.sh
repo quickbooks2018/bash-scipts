@@ -1,6 +1,6 @@
 #Define the domain name
 
-DOMAIN='cloudelligent.com'
+DOMAIN='cloudgeeks.tk'
 SUBDOMAIN='vpn'
 
 #Organization Details
