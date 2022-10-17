@@ -1,3 +1,5 @@
+#!/bin/bash
+
 #Define the domain name
 
 DOMAIN='cloudgeeks.tk'
