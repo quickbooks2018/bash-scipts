@@ -58,7 +58,8 @@ subjectAltName       = @alt_names
 [alt_names]
 IP.1  = 127.0.0.1
 DNS.1 = "$SUBDOMAIN"."$DOMAIN"
-DNS.2 = localhost
+DNS.2 = "$SUBDOMAIN"."$SUBDOMAIN"."$DOMAIN"
+DNS.3 = localhost
 EOF
 
 # Create the certificate authority (CA). This will be a self-signed CA, and this
