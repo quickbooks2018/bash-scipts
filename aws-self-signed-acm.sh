@@ -2,7 +2,7 @@
 
 #Define the domain name
 
-DOMAIN='cloudgeeks.tk'
+DOMAIN='cloudgeeks.ca'
 SUBDOMAIN='*'
 
 #Organization Details
